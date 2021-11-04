@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/api/v1/employees")
 public class EmployeeController {
 
     @Autowired
@@ -26,12 +26,12 @@ public class EmployeeController {
 
     @GetMapping
     public ResponseEntity<EmployeeResponseDto[]> getAllEmployees() {
-        return new ResponseEntity<>(this.employeeService.getAllEmployees(), HttpStatus.OK);
+        return ResponseEntity.ok().body(this.employeeService.getAllEmployees());
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<EmployeeResponseDto> getEmployeeById(@PathVariable Long id) {
-        return new ResponseEntity<>(this.employeeService.getEmployeeById(id), HttpStatus.OK);
+    @GetMapping(path = "{id}")
+    public ResponseEntity<EmployeeResponseDto> getEmployeeById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok().body(this.employeeService.getEmployeeById(id));
     }
 
     @PostMapping
@@ -39,16 +39,17 @@ public class EmployeeController {
         return new ResponseEntity<>(this.employeeService.addNewEmployee(request), HttpStatus.CREATED);
     }
 
-    @PutMapping("{id}")
+    @PutMapping(path = "{id}")
     public ResponseEntity<EmployeeResponseDto> updateEmployeeInfo(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody EmployeeRequestDto request
     ) {
-        return new ResponseEntity<>(this.employeeService.updateEmployeeInfo(id, request), HttpStatus.OK);
+        return ResponseEntity.ok().body(this.employeeService.updateEmployeeInfo(id, request));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<EmployeeResponseDto> deleteEmployee(@PathVariable Long id) {
-        return new ResponseEntity<>(this.employeeService.deleteEmployee(id), HttpStatus.NO_CONTENT);
+    public ResponseEntity<EmployeeResponseDto> deleteEmployee(@PathVariable("id") Long id) {
+        this.employeeService.deleteEmployee(id);
+        return ResponseEntity.noContent().build();
     }
 }

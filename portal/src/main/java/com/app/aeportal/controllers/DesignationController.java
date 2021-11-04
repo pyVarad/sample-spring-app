@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/designation")
+@RequestMapping("/api/v1/designation")
 public class DesignationController {
 
     @Autowired
@@ -25,12 +25,12 @@ public class DesignationController {
 
     @GetMapping
     public ResponseEntity<DesignationResponseDto[]> getAllDesignations() {
-        return new ResponseEntity<>(this.designationService.getAllDesignation(), HttpStatus.OK);
+        return ResponseEntity.ok().body(this.designationService.getAllDesignation());
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<DesignationResponseDto> getAllDesignationsById(@PathVariable Long id) {
-        return new ResponseEntity<>(this.designationService.getDesignationById(id), HttpStatus.OK);
+    @GetMapping(path = "{id}")
+    public ResponseEntity<DesignationResponseDto> getAllDesignationsById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok().body(this.designationService.getDesignationById(id));
     }
 
     @PostMapping
@@ -38,14 +38,15 @@ public class DesignationController {
         return new ResponseEntity<>(this.designationService.addNewDesignation(request), HttpStatus.CREATED);
     }
 
-    @PutMapping("{id}")
+    @PutMapping(path = "{id}")
     public ResponseEntity<DesignationResponseDto> updateDesignation(
-            @PathVariable Long id, @RequestBody DesignationRequestDto request) {
-        return new ResponseEntity<>(this.designationService.deleteDesignation(id), HttpStatus.NO_CONTENT);
+            @PathVariable("id") Long id, @RequestBody DesignationRequestDto request) {
+        return ResponseEntity.ok().body(this.designationService.updateDesignation(id, request));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<DesignationResponseDto> deleteDesignation(@PathVariable Long id) {
-        return new ResponseEntity<>(this.designationService.deleteDesignation(id), HttpStatus.NO_CONTENT);
+    public ResponseEntity<DesignationResponseDto> deleteDesignation(@PathVariable("id") Long id) {
+        this.designationService.deleteDesignation(id);
+        return ResponseEntity.noContent().build();
     }
 }

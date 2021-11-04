@@ -1,7 +1,6 @@
 package com.app.aeportal.controllers;
 
 import com.app.aeportal.Services.SkillsService;
-import com.app.aeportal.domain.Skills;
 import com.app.aeportal.dto.request.SkillsRequestDto;
 import com.app.aeportal.dto.response.SkillsResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/skills")
+@RequestMapping("/api/v1/skills")
 public class SkillsController {
 
     @Autowired
@@ -22,12 +21,12 @@ public class SkillsController {
 
     @GetMapping
     public ResponseEntity<SkillsResponseDto[]> getAllSkills() {
-        return new ResponseEntity<>(this.skillsService.getAllSkills(), HttpStatus.OK);
+        return ResponseEntity.ok().body(this.skillsService.getAllSkills());
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<SkillsResponseDto> getAllSkillById(@PathVariable Long id) {
-        return new ResponseEntity<>(this.skillsService.getSkillsById(id), HttpStatus.OK);
+    @GetMapping(path = "{id}")
+    public ResponseEntity<SkillsResponseDto> getAllSkillById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok().body(this.skillsService.getSkillsById(id));
     }
 
     @PostMapping
@@ -35,13 +34,17 @@ public class SkillsController {
         return new ResponseEntity<>(this.skillsService.addSkills(skills), HttpStatus.CREATED);
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<SkillsResponseDto> updateSkill(@PathVariable long id, @RequestBody SkillsRequestDto skills) {
-        return new ResponseEntity<>(this.skillsService.updateSkills(id, skills), HttpStatus.OK);
+    @PutMapping(path = "{id}")
+    public ResponseEntity<SkillsResponseDto> updateSkill(
+            @PathVariable("id") long id,
+            @RequestBody SkillsRequestDto skills
+    ) {
+        return ResponseEntity.ok().body(this.skillsService.updateSkills(id, skills));
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<SkillsResponseDto> deleteSkill(@PathVariable long id) {
-        return new ResponseEntity<>(this.skillsService.deleteSkills(id), HttpStatus.NO_CONTENT);
+    @DeleteMapping(path = "{id}")
+    public ResponseEntity<SkillsResponseDto> deleteSkill(@PathVariable("id") long id) {
+        this.skillsService.deleteSkills(id);
+        return ResponseEntity.noContent().build();
     }
 }

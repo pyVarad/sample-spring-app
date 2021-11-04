@@ -1,7 +1,9 @@
 package com.app.aeportal;
 
+import com.app.aeportal.Services.UserService;
 import com.app.aeportal.constant.DomainConstant;
 import com.app.aeportal.domain.*;
+import com.app.aeportal.dto.request.UserRequestDto;
 import com.app.aeportal.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -11,37 +13,40 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Collections;
 
 @Component
 public class loadData implements CommandLineRunner {
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+
+    private final EmployeeRepository employeeRepository;
+    private final DesignationRepository designationRepository;
+    private final SkillsRepository skillsRepository;
+    private final LocationRepository locationRepository;
+    private final ProjectsRepository projectsRepository;
+    private final UserRepository userRepository;
+    private final RolesRepository rolesRepository;
+    private final UserService userService;
 
     @Autowired
-    private DesignationRepository designationRepository;
-
-    @Autowired
-    private SkillsRepository skillsRepository;
-
-    @Autowired
-    private LocationRepository locationRepository;
-
-    @Autowired
-    private ProjectsRepository projectsRepository;
-
     public loadData(
             EmployeeRepository employeeRepository,
             DesignationRepository designationRepository,
             SkillsRepository skillsRepository,
             LocationRepository locationRepository,
-            ProjectsRepository projectsRepository
+            ProjectsRepository projectsRepository,
+            UserRepository userRepository,
+            RolesRepository rolesRepository,
+            UserService userService
     ) {
         this.employeeRepository = employeeRepository;
         this.designationRepository = designationRepository;
         this.skillsRepository = skillsRepository;
         this.locationRepository = locationRepository;
         this.projectsRepository = projectsRepository;
+        this.userRepository = userRepository;
+        this.rolesRepository = rolesRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -128,5 +133,39 @@ public class loadData implements CommandLineRunner {
         varad.setLocation(bangalore);
         varad.setSkills(Arrays.asList(backendJava, backendPython, frontendAngular, frontendReact));
         this.employeeRepository.save(varad);
+
+        /* Roles */
+        Roles admin = new Roles("admin");
+        Roles superAdmin = new Roles("superAdmin");
+        Roles user = new Roles("user");
+
+        admin = this.rolesRepository.save(admin);
+        superAdmin = this.rolesRepository.save(superAdmin);
+        user = this.rolesRepository.save(user);
+
+        /* Users */
+        UserRequestDto john = new UserRequestDto();
+        john.setFirstName("John");
+        john.setLastName("Strauss");
+        john.setUsername("jstrauss");
+        john.setPassword("password123");
+        john.setRoles(Arrays.asList(admin.getId(), user.getId()));
+        this.userService.addNewUser(john);
+
+        UserRequestDto mark = new UserRequestDto();
+        mark.setFirstName("Mark");
+        mark.setLastName("Streatfield");
+        mark.setUsername("mstreatfield");
+        mark.setPassword("password123");
+        mark.setRoles(Arrays.asList(admin.getId(), user.getId(), superAdmin.getId()));
+        this.userService.addNewUser(mark);
+
+        UserRequestDto varadag = new UserRequestDto();
+        varadag.setFirstName("Varad");
+        varadag.setLastName("AG");
+        varadag.setUsername("agvarad");
+        varadag.setPassword("password123");
+        varadag.setRoles(Arrays.asList(user.getId(), superAdmin.getId()));
+        this.userService.addNewUser(varadag);
     }
 }

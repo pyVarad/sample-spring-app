@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/location")
+@RequestMapping("/api/v1/location")
 public class LocationController {
 
     @Autowired
@@ -23,12 +23,12 @@ public class LocationController {
 
     @GetMapping
     public ResponseEntity<LocationResponseDto[]> getAllLocations() {
-        return new ResponseEntity<>(this.locationService.getAllLocations(), HttpStatus.OK);
+        return ResponseEntity.ok().body(this.locationService.getAllLocations());
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<LocationResponseDto> getAllLocationById(@PathVariable Long id) {
-        return new ResponseEntity<>(this.locationService.getLocationById(id), HttpStatus.OK);
+    @GetMapping(path = "{id}")
+    public ResponseEntity<LocationResponseDto> getAllLocationById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok().body(this.locationService.getLocationById(id));
     }
 
     @PostMapping
@@ -36,13 +36,17 @@ public class LocationController {
         return new ResponseEntity<>(this.locationService.addNewLocation(request), HttpStatus.CREATED);
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<LocationResponseDto> updateLocation(@PathVariable Long id, @RequestBody LocationRequestDto request) {
-        return new ResponseEntity<>(this.locationService.updateLocation(id, request), HttpStatus.OK);
+    @PutMapping(path = "{id}")
+    public ResponseEntity<LocationResponseDto> updateLocation(
+            @PathVariable("id") Long id,
+            @RequestBody LocationRequestDto request
+    ) {
+        return ResponseEntity.ok().body(this.locationService.updateLocation(id, request));
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<LocationResponseDto> deleteLocation(@PathVariable  Long id) {
-        return new ResponseEntity<>(this.locationService.deleteLocation(id), HttpStatus.NO_CONTENT);
+    @DeleteMapping(path = "{id}")
+    public ResponseEntity<LocationResponseDto> deleteLocation(@PathVariable("id")  Long id) {
+        this.locationService.deleteLocation(id);
+        return ResponseEntity.noContent().build();
     }
 }
