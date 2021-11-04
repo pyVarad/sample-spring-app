@@ -3,7 +3,6 @@ package com.app.aeportal.security;
 
 import com.app.aeportal.security.filter.CustomAuthenticationFilter;
 import com.app.aeportal.security.filter.CustomAuthorizationFilter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,11 +18,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder passwordEncoder;
+
+    public ApplicationSecurityConfig(
+            UserDetailsService userDetailsService,
+            BCryptPasswordEncoder passwordEncoder
+    ) {
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -60,7 +66,19 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll();
         http
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/v1/users/**")
+                .antMatchers(HttpMethod.GET, "/api/v1/**")
+                .hasAnyAuthority("admin", "superadmin", "user");
+        http
+                .authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/api/v1/**")
+                .hasAnyAuthority("admin", "superadmin");
+        http
+                .authorizeRequests()
+                .antMatchers(HttpMethod.DELETE, "/api/v1/**")
+                .hasAnyAuthority("superadmin");
+        http
+                .authorizeRequests()
+                .antMatchers(HttpMethod.PUT, "/api/v1/**")
                 .hasAnyAuthority("admin", "superadmin");
         http
                 .sessionManagement()

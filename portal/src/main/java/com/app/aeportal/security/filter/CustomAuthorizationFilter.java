@@ -30,7 +30,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
         if (request.getServletPath().equals("/api/login") ||
-                request.getServletPath().equals("/api/v1/tokenRefresh")) {
+                request.getServletPath().equals("/api/v1/tokenRefresh") ||
+                request.getServletPath().equals("/v3/api-docs")) {
             filterChain.doFilter(request, response);
         } else {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
