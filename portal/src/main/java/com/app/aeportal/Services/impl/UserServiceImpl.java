@@ -117,4 +117,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         Users user = this.getUserForGivenId(id);
         this.userRepository.delete(user);
     }
+
+    @Override
+    public UserResponseDto getUserByUserName(String username) {
+        Users users = this.userRepository.findByUsername(username);
+        if(users != null) {
+            return this.objectMapper.convertValue(users, UserResponseDto.class);
+        }
+        throw new NoSuchElementFoundException("The given username is not valid.");
+    }
 }
