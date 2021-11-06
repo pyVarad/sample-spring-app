@@ -1,6 +1,6 @@
 package com.app.aeportal;
 
-import com.app.aeportal.Services.UserService;
+import com.app.aeportal.services.UserService;
 import com.app.aeportal.constant.DomainConstant;
 import com.app.aeportal.domain.*;
 import com.app.aeportal.dto.request.UserRequestDto;
@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Set;
 
 @Component
 public class loadData implements CommandLineRunner {
@@ -124,14 +124,13 @@ public class loadData implements CommandLineRunner {
                 "IN010M63916",
                 "varad.g@test.com",
                 true,
-                Arrays.asList(nexusBanking, nexusInsurance),
                 DomainConstant.Gender.Male,
                 DomainConstant.Segment.FS
         );
-        varad.setProjects(Arrays.asList(nexusBanking, nexusInsurance, nexusMortgages));
+        varad.setProjects(Set.of(nexusBanking, nexusInsurance, nexusMortgages));
         varad.setDesignation(manager);
         varad.setLocation(bangalore);
-        varad.setSkills(Arrays.asList(backendJava, backendPython, frontendAngular, frontendReact));
+        varad.setSkills(Set.of(backendJava, backendPython, frontendAngular, frontendReact));
         this.employeeRepository.save(varad);
 
         /* Roles */

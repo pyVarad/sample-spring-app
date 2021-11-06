@@ -3,10 +3,12 @@ package com.app.aeportal.domain;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Set;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity(name = "projects")
+@Table
 public class Projects {
 
     @Id
@@ -35,7 +37,7 @@ public class Projects {
     private LocalDateTime endDate;
 
     @ManyToMany(mappedBy = "projects")
-    private Collection<Employee> employees;
+    private Set<Employee> employees;
 
     public Projects() { }
 
@@ -83,11 +85,11 @@ public class Projects {
         this.endDate = endDate;
     }
 
-    public Collection<Employee> getEmployees() {
+    public Set<Employee> getEmployees() {
         return employees;
     }
 
-    public void setEmployees(Collection<Employee> employees) {
+    public void setEmployees(Set<Employee> employees) {
         this.employees = employees;
     }
 
@@ -103,7 +105,6 @@ public class Projects {
                 ", projectName='" + projectName + '\'' +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", employees=" + employees +
                 '}';
     }
 }

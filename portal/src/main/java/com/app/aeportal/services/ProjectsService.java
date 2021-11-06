@@ -1,4 +1,4 @@
-package com.app.aeportal.Services;
+package com.app.aeportal.services;
 
 
 import com.app.aeportal.dto.request.ProjectsRequestDto;
@@ -9,6 +9,6 @@ public interface ProjectsService {
     ProjectsResponseDto[] getAllProjects();
     ProjectsResponseDto addNewProject(ProjectsRequestDto request);
     ProjectsResponseDto updateProject(Long projectId, ProjectsRequestDto request);
-    ProjectsResponseDto deleteProject(Long projectId);
+    void deleteProject(Long projectId);
     ProjectsResponseDto getProjectsById(Long id);
 }

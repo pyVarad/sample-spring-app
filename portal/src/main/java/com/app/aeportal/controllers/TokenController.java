@@ -1,7 +1,7 @@
 package com.app.aeportal.controllers;
 
 
-import com.app.aeportal.Services.UserService;
+import com.app.aeportal.services.UserService;
 import com.app.aeportal.dto.response.RoleResponseDto;
 import com.app.aeportal.dto.response.UserResponseDto;
 import com.auth0.jwt.JWT;

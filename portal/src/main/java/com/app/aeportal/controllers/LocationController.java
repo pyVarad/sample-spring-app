@@ -1,6 +1,6 @@
 package com.app.aeportal.controllers;
 
-import com.app.aeportal.Services.LocationService;
+import com.app.aeportal.services.LocationService;
 import com.app.aeportal.dto.request.LocationRequestDto;
 import com.app.aeportal.dto.response.LocationResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,12 +1,13 @@
-package com.app.aeportal.Services.impl;
+package com.app.aeportal.services.impl;
 
-import com.app.aeportal.Services.SkillsService;
 import com.app.aeportal.aop.NoSuchElementFoundException;
 import com.app.aeportal.domain.Skills;
 import com.app.aeportal.dto.request.SkillsRequestDto;
 import com.app.aeportal.dto.response.SkillsResponseDto;
 import com.app.aeportal.repository.SkillsRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.app.aeportal.services.SkillsService;
+import org.modelmapper.Conditions;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +17,12 @@ import java.util.Optional;
 @Service
 public class SkillsServiceImpl implements SkillsService {
 
-    @Autowired
-    private final ObjectMapper objectMapper;
-
-    @Autowired
     private final SkillsRepository skillsRepository;
 
+    @Autowired
     public SkillsServiceImpl(
-            ObjectMapper objectMapper,
             SkillsRepository skillsRepository
     ) {
-        this.objectMapper = objectMapper;
         this.skillsRepository = skillsRepository;
     }
 
@@ -39,35 +35,35 @@ public class SkillsServiceImpl implements SkillsService {
 
     @Override
     public SkillsResponseDto[] getAllSkills() {
-        return this.objectMapper.convertValue(this.skillsRepository.findAll(), SkillsResponseDto[].class);
+        return new ModelMapper().map(this.skillsRepository.findAll(), SkillsResponseDto[].class);
     }
 
     @Override
     @Transactional
     public SkillsResponseDto addSkills(SkillsRequestDto request) {
         Skills skills = request.toSkills();
-        return this.objectMapper.convertValue(this.skillsRepository.save(skills), SkillsResponseDto.class);
+        return new ModelMapper().map(this.skillsRepository.save(skills), SkillsResponseDto.class);
     }
 
     @Override
     @Transactional
-    public SkillsResponseDto deleteSkills(Long id) {
+    public void deleteSkills(Long id) {
         Skills skills = getSkillsForGivenId(id);
         this.skillsRepository.delete(skills);
-        return this.objectMapper.convertValue(skills, SkillsResponseDto.class);
     }
 
     @Override
     @Transactional
     public SkillsResponseDto updateSkills(Long id, SkillsRequestDto request) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         Skills skills = getSkillsForGivenId(id);
-        Skills updatedSkills = request.toSkills();
-        updatedSkills.setId(skills.getId());
-        return this.objectMapper.convertValue(this.skillsRepository.save(skills), SkillsResponseDto.class);
+        modelMapper.map(request.toSkills(), skills);
+        return new ModelMapper().map(this.skillsRepository.save(skills), SkillsResponseDto.class);
     }
 
     @Override
     public SkillsResponseDto getSkillsById(Long id) {
-        return this.objectMapper.convertValue(this.getSkillsForGivenId(id), SkillsResponseDto.class);
+        return new ModelMapper().map(this.getSkillsForGivenId(id), SkillsResponseDto.class);
     }
 }

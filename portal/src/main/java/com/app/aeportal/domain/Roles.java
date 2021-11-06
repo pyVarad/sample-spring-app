@@ -25,8 +25,8 @@ public class Roles {
     @Column(name = "role_name", nullable = false)
     private String roleName;
 
-//    @ManyToMany(mappedBy = "roles")
-//    private Collection<Users> users;
+    @ManyToMany(mappedBy = "roles")
+    private Collection<Users> users;
 
     public Roles() { }
 
@@ -50,20 +50,20 @@ public class Roles {
         this.roleName = roleName;
     }
 
-//    public Collection<Users> getUsers() {
-//        return users;
-//    }
-//
-//    public void setUsers(Collection<Users> users) {
-//        this.users = users;
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "Roles{" +
-//                "id=" + id +
-//                ", roleName='" + roleName + '\'' +
-//                ", users=" + users +
-//                '}';
-//    }
+    public Collection<Users> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Collection<Users> users) {
+        this.users = users;
+    }
+
+    @Override
+    public String toString() {
+        return "Roles{" +
+                "id=" + id +
+                ", roleName='" + roleName + '\'' +
+                ", users=" + users +
+                '}';
+    }
 }

@@ -6,10 +6,13 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import static javax.persistence.GenerationType.SEQUENCE;
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.Set;
+
 import static com.app.aeportal.constant.DomainConstant.Gender;
 import static com.app.aeportal.constant.DomainConstant.Segment;
 
-@Entity(name = "Employees")
+@Entity
+@Table(name = "Employees")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
@@ -53,30 +56,28 @@ public class Employee {
     private Segment segment;
 
     @OneToOne
-    @JoinColumn(
-            name = "designation_id", foreignKey = @ForeignKey(name = "fk_employee_designation")
-    )
+    @JoinColumn(name = "designation_id", foreignKey = @ForeignKey(name = "fk_employee_designation"))
     private Designation designation;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "employee_project",
             joinColumns = @JoinColumn(name = "employee_id", foreignKey = @ForeignKey(name = "fk_employee_employee_project")),
             inverseJoinColumns = @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "fk_project_employee_project"))
     )
-    private Collection<Projects> projects;
+    private Set<Projects> projects;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "employee_skills",
             joinColumns = @JoinColumn(name = "employee_id", foreignKey = @ForeignKey(name = "fk_employee_employee_skills")),
             inverseJoinColumns = @JoinColumn(name = "skills_id", foreignKey = @ForeignKey(name = "fk_skills_employee_skills"))
     )
-    private Collection<Skills> skills;
+    private Set<Skills> skills;
 
 
     @OneToOne
-    @PrimaryKeyJoinColumn
+    @JoinColumn(name = "location_id", foreignKey = @ForeignKey(name = "fk_employee_location"))
     private Location location;
 
     public Employee() { }
@@ -87,7 +88,6 @@ public class Employee {
             String employeeId,
             String email,
             Boolean isActive,
-            Collection<Projects> projects,
             Gender gender,
             Segment segment) {
         this.firstName = firstName;
@@ -95,7 +95,6 @@ public class Employee {
         this.employeeId = employeeId;
         this.email = email;
         this.isActive = isActive;
-        this.projects = projects;
         this.gender = gender;
         this.segment = segment;
     }
@@ -140,11 +139,11 @@ public class Employee {
         this.email = email;
     }
 
-    public Collection<Projects> getProjects() {
+    public Set<Projects> getProjects() {
         return projects;
     }
 
-    public void setProjects(Collection<Projects> projects) {
+    public void setProjects(Set<Projects> projects) {
         this.projects = projects;
     }
 
@@ -172,22 +171,12 @@ public class Employee {
         this.location = location;
     }
 
-    public Collection<Skills> getSkills() {
+    public Set<Skills> getSkills() {
         return skills;
     }
 
-    public void setSkills(Collection<Skills> skills) {
+    public void setSkills(Set<Skills> skills) {
         this.skills = skills;
     }
 
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", employeeId='" + employeeId + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
 }

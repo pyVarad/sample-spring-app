@@ -67,19 +67,19 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/api/v1/**")
-                .hasAnyAuthority("admin", "superadmin", "user");
+                .permitAll();
         http
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/v1/**")
-                .hasAnyAuthority("admin", "superadmin");
+                .permitAll();;
         http
                 .authorizeRequests()
                 .antMatchers(HttpMethod.DELETE, "/api/v1/**")
-                .hasAnyAuthority("superadmin");
+                .permitAll();;
         http
                 .authorizeRequests()
                 .antMatchers(HttpMethod.PUT, "/api/v1/**")
-                .hasAnyAuthority("admin", "superadmin");
+                .permitAll();;
         http
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

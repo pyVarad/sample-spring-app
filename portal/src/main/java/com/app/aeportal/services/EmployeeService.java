@@ -1,4 +1,4 @@
-package com.app.aeportal.Services;
+package com.app.aeportal.services;
 
 import com.app.aeportal.dto.request.EmployeeRequestDto;
 import com.app.aeportal.dto.response.EmployeeResponseDto;
@@ -8,6 +8,6 @@ public interface EmployeeService {
     EmployeeResponseDto[] getAllEmployees();
     EmployeeResponseDto addNewEmployee(EmployeeRequestDto request);
     EmployeeResponseDto updateEmployeeInfo(Long id, EmployeeRequestDto request);
-    EmployeeResponseDto deleteEmployee(Long id);
+    void deleteEmployee(Long id);
     EmployeeResponseDto getEmployeeById(Long id);
 }

@@ -1,18 +1,21 @@
-package com.app.aeportal.Services.impl;
+package com.app.aeportal.services.impl;
 
-import com.app.aeportal.Services.EmployeeService;
 import com.app.aeportal.aop.NoSuchElementFoundException;
 import com.app.aeportal.domain.*;
 import com.app.aeportal.dto.request.EmployeeRequestDto;
 import com.app.aeportal.dto.response.EmployeeResponseDto;
 import com.app.aeportal.repository.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.app.aeportal.services.EmployeeService;
+import org.modelmapper.Conditions;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,9 +23,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private final EmployeeRepository employeeRepository;
-
-    @Autowired
-    private final ObjectMapper objectMapper;
 
     @Autowired
     private final DesignationRepository designationRepository;
@@ -38,14 +38,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     public EmployeeServiceImpl(
             EmployeeRepository employeeRepository,
-            ObjectMapper objectMapper,
             DesignationRepository designationRepository,
             LocationRepository locationRepository,
             SkillsRepository skillsRepository,
             ProjectsRepository projectsRepository
     ) {
         this.employeeRepository = employeeRepository;
-        this.objectMapper = objectMapper;
         this.designationRepository = designationRepository;
         this.locationRepository = locationRepository;
         this.skillsRepository = skillsRepository;
@@ -98,46 +96,45 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setDesignation(designation);
         }
 
-        Collection<Projects> projects = request.getProjects().stream().map(
-                this::getProjectById).collect(Collectors.toCollection(ArrayList::new)
-        );
+        Set<Projects> projects = request.getProjects().stream().map(
+                this::getProjectById).collect(Collectors.toSet());
         employee.setProjects(projects);
 
-        Collection<Skills> skills = request.getSkills().stream().map(
-                this::getSkillsForGivenId).collect(Collectors.toCollection(ArrayList::new)
-        );
+        Set<Skills> skills = request.getSkills().stream().map(
+                this::getSkillsForGivenId).collect(Collectors.toSet());
         employee.setSkills(skills);
         return employee;
     }
 
     @Override
     public EmployeeResponseDto[] getAllEmployees() {
-        return this.objectMapper.convertValue(this.employeeRepository.findAll(), EmployeeResponseDto[].class);
+        return new ModelMapper().map(this.employeeRepository.findAll(), EmployeeResponseDto[].class);
     }
 
     @Override
+    @Transactional
     public EmployeeResponseDto addNewEmployee(EmployeeRequestDto request) {
         Employee employee = this.createEmployeeInfo(request);
-        return this.objectMapper.convertValue(this.employeeRepository.save(employee), EmployeeResponseDto.class);
+        return new ModelMapper().map(this.employeeRepository.save(employee), EmployeeResponseDto.class);
     }
 
     @Override
     public EmployeeResponseDto updateEmployeeInfo(Long id, EmployeeRequestDto request) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         Employee employee = this.getEmployeeForGivenId(id);
-        Employee updatedEmployee = this.createEmployeeInfo(request);
-        updatedEmployee.setId(employee.getId());
-        return this.objectMapper.convertValue(this.employeeRepository.save(employee), EmployeeResponseDto.class);
+        modelMapper.map(this.createEmployeeInfo(request), employee);
+        return new ModelMapper().map(this.employeeRepository.save(employee), EmployeeResponseDto.class);
     }
 
     @Override
-    public EmployeeResponseDto deleteEmployee(Long id) {
+    public void deleteEmployee(Long id) {
         Employee employee = this.getEmployeeForGivenId(id);
         this.employeeRepository.delete(employee);
-        return this.objectMapper.convertValue(employee, EmployeeResponseDto.class);
     }
 
     @Override
     public EmployeeResponseDto getEmployeeById(Long id) {
-        return this.objectMapper.convertValue(this.getEmployeeForGivenId(id), EmployeeResponseDto.class);
+        return new ModelMapper().map(this.getEmployeeForGivenId(id), EmployeeResponseDto.class);
     }
 }

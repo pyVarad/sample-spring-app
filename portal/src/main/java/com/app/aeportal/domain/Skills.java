@@ -28,8 +28,8 @@ public class Skills {
     @Column(name = "skill", nullable = false)
     private String skill;
 
-    @ManyToMany(mappedBy = "skills")
-    private Collection<Employee> employees;
+//    @ManyToMany(mappedBy = "skills")
+//    private Collection<Employee> employees;
 
     public Skills() { }
 
@@ -65,13 +65,13 @@ public class Skills {
         this.skill = skill;
     }
 
-    public Collection<Employee> getEmployees() {
-        return employees;
-    }
-
-    public void setEmployees(Collection<Employee> employees) {
-        this.employees = employees;
-    }
+//    public Collection<Employee> getEmployees() {
+//        return employees;
+//    }
+//
+//    public void setEmployees(Collection<Employee> employees) {
+//        this.employees = employees;
+//    }
 
     @Override
     public String toString() {
@@ -79,7 +79,6 @@ public class Skills {
                 "id=" + id +
                 ", skillCategory='" + skillCategory + '\'' +
                 ", skill='" + skill + '\'' +
-                ", employees=" + employees +
                 '}';
     }
 }

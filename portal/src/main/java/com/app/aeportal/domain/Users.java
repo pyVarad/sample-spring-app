@@ -39,7 +39,7 @@ public class Users {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_user_user_role")),

@@ -1,12 +1,13 @@
-package com.app.aeportal.Services.impl;
+package com.app.aeportal.services.impl;
 
-import com.app.aeportal.Services.RoleService;
 import com.app.aeportal.aop.NoSuchElementFoundException;
 import com.app.aeportal.domain.Roles;
 import com.app.aeportal.dto.request.RoleRequestDto;
 import com.app.aeportal.dto.response.RoleResponseDto;
 import com.app.aeportal.repository.RolesRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.app.aeportal.services.RoleService;
+import org.modelmapper.Conditions;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,15 +19,11 @@ public class RoleServiceImpl implements RoleService {
 
     private final RolesRepository rolesRepository;
 
-    private final ObjectMapper objectMapper;
-
     @Autowired
     public RoleServiceImpl(
-            RolesRepository rolesRepository,
-            ObjectMapper objectMapper
+            RolesRepository rolesRepository
     ) {
         this.rolesRepository = rolesRepository;
-        this.objectMapper = objectMapper;
     }
 
     private Roles getRoleForGivenId(Long id) {
@@ -38,26 +35,27 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleResponseDto[] getAllRoles() {
-        return this.objectMapper.convertValue(this.rolesRepository.findAll(), RoleResponseDto[].class);
+        return new ModelMapper().map(this.rolesRepository.findAll(), RoleResponseDto[].class);
     }
 
     @Override
     public RoleResponseDto getRoleById(Long id) {
-        return this.objectMapper.convertValue(this.getRoleForGivenId(id), RoleResponseDto.class);
+        return new ModelMapper().map(this.getRoleForGivenId(id), RoleResponseDto.class);
     }
 
     @Override
     public RoleResponseDto addNewRole(RoleRequestDto request) {
         Roles roles = request.toRole();
-        return this.objectMapper.convertValue(this.rolesRepository.save(roles), RoleResponseDto.class);
+        return new ModelMapper().map(this.rolesRepository.save(roles), RoleResponseDto.class);
     }
 
     @Override
     public RoleResponseDto updatedRole(Long id, RoleRequestDto request) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         Roles role = this.getRoleForGivenId(id);
-        Roles updatedRole = request.toRole();
-        updatedRole.setId(role.getId());
-        return this.objectMapper.convertValue(this.rolesRepository.save(updatedRole), RoleResponseDto.class);
+        modelMapper.map(request.toRole(), role);
+        return new ModelMapper().map(this.rolesRepository.save(role), RoleResponseDto.class);
     }
 
     @Override

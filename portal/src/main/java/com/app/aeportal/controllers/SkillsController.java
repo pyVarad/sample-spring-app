@@ -1,6 +1,6 @@
 package com.app.aeportal.controllers;
 
-import com.app.aeportal.Services.SkillsService;
+import com.app.aeportal.services.SkillsService;
 import com.app.aeportal.dto.request.SkillsRequestDto;
 import com.app.aeportal.dto.response.SkillsResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;

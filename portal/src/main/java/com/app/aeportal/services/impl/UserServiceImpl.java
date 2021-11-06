@@ -1,6 +1,5 @@
-package com.app.aeportal.Services.impl;
+package com.app.aeportal.services.impl;
 
-import com.app.aeportal.Services.UserService;
 import com.app.aeportal.aop.NoSuchElementFoundException;
 import com.app.aeportal.domain.Roles;
 import com.app.aeportal.domain.Users;
@@ -8,8 +7,9 @@ import com.app.aeportal.dto.request.UserRequestDto;
 import com.app.aeportal.dto.response.UserResponseDto;
 import com.app.aeportal.repository.RolesRepository;
 import com.app.aeportal.repository.UserRepository;
-import com.app.aeportal.security.PasswordEncoderConfig;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.app.aeportal.services.UserService;
+import org.modelmapper.Conditions;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,19 +30,16 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
-    private final ObjectMapper objectMapper;
     private final RolesRepository rolesRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(
             UserRepository userRepository,
-            ObjectMapper objectMapper,
             RolesRepository rolesRepository,
             PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
-        this.objectMapper = objectMapper;
         this.rolesRepository = rolesRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -90,26 +87,27 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserResponseDto[] getUsers() {
-        return this.objectMapper.convertValue(this.userRepository.findAll(), UserResponseDto[].class);
+        return new ModelMapper().map(this.userRepository.findAll(), UserResponseDto[].class);
     }
 
     @Override
     public UserResponseDto getUserById(Long id) {
-        return this.objectMapper.convertValue(this.getUserForGivenId(id), UserResponseDto.class);
+        return new ModelMapper().map(this.getUserForGivenId(id), UserResponseDto.class);
     }
 
     @Override
     public UserResponseDto addNewUser(UserRequestDto request) {
         Users user = this.createUserRequest(request);
-        return this.objectMapper.convertValue(this.userRepository.save(user), UserResponseDto.class);
+        return new ModelMapper().map(this.userRepository.save(user), UserResponseDto.class);
     }
 
     @Override
     public UserResponseDto updateUserInfo(Long id, UserRequestDto request) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         Users user = this.getUserForGivenId(id);
-        Users updatedUserInfo = this.createUserRequest(request);
-        updatedUserInfo.setId(user.getId());
-        return this.objectMapper.convertValue(this.userRepository.save(updatedUserInfo), UserResponseDto.class);
+        modelMapper.map(request.toUsers(), user);
+        return new ModelMapper().map(this.userRepository.save(user), UserResponseDto.class);
     }
 
     @Override
@@ -122,7 +120,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserResponseDto getUserByUserName(String username) {
         Users users = this.userRepository.findByUsername(username);
         if(users != null) {
-            return this.objectMapper.convertValue(users, UserResponseDto.class);
+            return new ModelMapper().map(users, UserResponseDto.class);
         }
         throw new NoSuchElementFoundException("The given username is not valid.");
     }

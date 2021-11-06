@@ -1,6 +1,6 @@
 package com.app.aeportal.controllers;
 
-import com.app.aeportal.Services.ProjectsService;
+import com.app.aeportal.services.ProjectsService;
 import com.app.aeportal.dto.request.ProjectsRequestDto;
 import com.app.aeportal.dto.response.ProjectsResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,12 +1,13 @@
-package com.app.aeportal.Services.impl;
+package com.app.aeportal.services.impl;
 
-import com.app.aeportal.Services.LocationService;
 import com.app.aeportal.aop.NoSuchElementFoundException;
 import com.app.aeportal.domain.Location;
 import com.app.aeportal.dto.request.LocationRequestDto;
 import com.app.aeportal.dto.response.LocationResponseDto;
 import com.app.aeportal.repository.LocationRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.app.aeportal.services.LocationService;
+import org.modelmapper.Conditions;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +17,14 @@ import java.util.Optional;
 @Service
 public class LocationServiceImpl implements LocationService {
 
-    @Autowired
+
     private final LocationRepository locationRepository;
 
     @Autowired
-    private final ObjectMapper objectMapper;
-
     public LocationServiceImpl(
-            LocationRepository locationRepository,
-            ObjectMapper objectMapper) {
+            LocationRepository locationRepository
+    ) {
         this.locationRepository = locationRepository;
-        this.objectMapper = objectMapper;
     }
 
     private Location getLocationForId(Long id) {
@@ -38,35 +36,35 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationResponseDto getLocationById(Long id) {
-        return this.objectMapper.convertValue(this.getLocationForId(id), LocationResponseDto.class);
+        return new ModelMapper().map(this.getLocationForId(id), LocationResponseDto.class);
     }
 
 
     @Override
     public LocationResponseDto[] getAllLocations() {
-        return this.objectMapper.convertValue(this.locationRepository.findAll(), LocationResponseDto[].class);
+        return new ModelMapper().map(this.locationRepository.findAll(), LocationResponseDto[].class);
     }
 
     @Override
     public LocationResponseDto addNewLocation(LocationRequestDto request) {
         Location location = request.toLocation();
-        return this.objectMapper.convertValue(this.locationRepository.save(location), LocationResponseDto.class);
+        return new ModelMapper().map(this.locationRepository.save(location), LocationResponseDto.class);
     }
 
     @Override
     @Transactional
     public LocationResponseDto updateLocation(Long id, LocationRequestDto request) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         Location location = this.getLocationForId(id);
-        Location updatedLocation = request.toLocation();
-        updatedLocation.setId(location.getId());
-        return this.objectMapper.convertValue(this.locationRepository.save(updatedLocation), LocationResponseDto.class);
+        modelMapper.map(request.toLocation(), location);
+        return new ModelMapper().map(this.locationRepository.save(location), LocationResponseDto.class);
     }
 
     @Override
     @Transactional
-    public LocationResponseDto deleteLocation(Long id) {
+    public void deleteLocation(Long id) {
         Location location = this.getLocationForId(id);
         this.locationRepository.delete(location);
-        return this.objectMapper.convertValue(location, LocationResponseDto.class);
     }
 }

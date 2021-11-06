@@ -1,9 +1,8 @@
 package com.app.aeportal.controllers;
 
-import com.app.aeportal.Services.UserService;
+import com.app.aeportal.services.UserService;
 import com.app.aeportal.dto.request.UserRequestDto;
 import com.app.aeportal.dto.response.UserResponseDto;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.app.aeportal.controllers;
 
-import com.app.aeportal.Services.DesignationService;
+import com.app.aeportal.services.DesignationService;
 import com.app.aeportal.dto.request.DesignationRequestDto;
 import com.app.aeportal.dto.response.DesignationResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
